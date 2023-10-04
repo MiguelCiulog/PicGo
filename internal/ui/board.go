@@ -28,20 +28,19 @@ type Model struct {
 	rowClues    [][]int
 }
 
-func NewModel(maxWidth int, maxHeight int) Model {
-	board := createRandomBoard(maxWidth, maxHeight)
-	rowHints, colHints := getNonogramHints(board)
+func NewModel(maxWidth int, maxHeight int) (model Model) {
+	board := model.createRandomBoard(maxWidth, maxHeight)
+	model.board = board
 
-	model := Model{
-		board:       board,
-		columnClues: colHints,
-		rowClues:    rowHints,
-	}
-    fmt.Println(model)
+	rowHints, colHints := model.getNonogramHints()
+	model.rowClues = rowHints
+	model.columnClues = colHints
+
+	fmt.Println(model)
 	return model
 }
 
-func createRandomBoard(maxWidth int, maxHeight int) [][]cell {
+func (model *Model) createRandomBoard(maxWidth int, maxHeight int) [][]cell {
 	var board [][]cell
 
 	for i := 0; i < maxWidth; i++ { // Columns
@@ -68,12 +67,14 @@ func shouldBeFilled() bool {
 	return rand.Intn(2) == 1
 }
 
-func getHint(board [][]cell, mainSegmentSize int, secondarySegmentSize int) [][]int {
-	rowHints := make([][]int, mainSegmentSize)
-	// Process rows
+func (model *Model) generateSegmentHints(mainSegmentSize, secondarySegmentSize int) [][]int {
+	board := model.board
+	hints := make([][]int, mainSegmentSize)
+
+	// Process segment (rows then columns or viceversa)
 	for i := 0; i < mainSegmentSize; i++ {
 		row := board[i]
-		rowHint := []int{}
+		hint := []int{}
 		count := 0
 
 		for j := 0; j < secondarySegmentSize; j++ {
@@ -81,80 +82,28 @@ func getHint(board [][]cell, mainSegmentSize int, secondarySegmentSize int) [][]
 				count++
 			} else {
 				if count > 0 {
-					rowHint = append(rowHint, count)
+					hint = append(hint, count)
 					count = 0
 				}
 			}
 		}
 
 		if count > 0 {
-			rowHint = append(rowHint, count)
+			hint = append(hint, count)
 		}
 
-		rowHints[i] = rowHint
+		hints[i] = hint
 	}
-	return rowHints
+	return hints
 }
 
-func getNonogramHints(board [][]cell) (rowHints, colHints [][]int) {
+func (model *Model) getNonogramHints() (rowHints, colHints [][]int) {
+	board := model.board
 	numRows := len(board)
 	numCols := len(board[0])
 
-	// Initialize the slices to store row and column hints
-	rowHints = make([][]int, numRows)
-	colHints = make([][]int, numCols)
-
-	// Process rows
-	for i := 0; i < numRows; i++ {
-		row := board[i]
-		rowHint := []int{}
-		count := 0
-
-		for j := 0; j < numCols; j++ {
-			if row[j].shouldBeFilled {
-				count++
-			} else {
-				if count > 0 {
-					rowHint = append(rowHint, count)
-					count = 0
-				}
-			}
-		}
-
-		if count > 0 {
-			rowHint = append(rowHint, count)
-		}
-
-		rowHints[i] = rowHint
-	}
-
-	// Process columns
-	for j := 0; j < numCols; j++ {
-		col := make([]bool, numRows)
-		colHint := []int{}
-		count := 0
-
-		for i := 0; i < numRows; i++ {
-			col[i] = board[i][j].shouldBeFilled
-		}
-
-		for i := 0; i < numRows; i++ {
-			if col[i] {
-				count++
-			} else {
-				if count > 0 {
-					colHint = append(colHint, count)
-					count = 0
-				}
-			}
-		}
-
-		if count > 0 {
-			colHint = append(colHint, count)
-		}
-
-		colHints[j] = colHint
-	}
+	rowHints = model.generateSegmentHints(numRows, numCols)
+	colHints = model.generateSegmentHints(numCols, numRows)
 
 	return rowHints, colHints
 }
@@ -186,4 +135,3 @@ func (m Model) View() string {
 	mainView := style.Render(stuff)
 	return mainView
 }
-
