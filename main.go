@@ -1,34 +1,19 @@
 package main
 
+// A simple program that opens the alternate screen buffer and displays mouse
+// coordinates and events.
+
 import (
-	"fmt"
+	"log"
+
+	tea "github.com/charmbracelet/bubbletea"
+    game "github.com/MiguelCiulog/PicGo/internal"
 )
 
 func main() {
-	fmt.Println("uwu")
+	p := tea.NewProgram(game.NewModel(), tea.WithAltScreen(), tea.WithMouseCellMotion())
+	if _, err := p.Run(); err != nil {
+		log.Fatal(err)
+	}
 }
 
-const (
-	blankGuess     = 0
-	correctGuess   = 1
-	incorrectGuess = 2
-	filledSquare   = "■"
-	blankSquare    = "□"
-)
-
-type Grid struct {
-	Rows   []int
-	Column []int
-
-	Clues map[*int][]int
-}
-
-
-func createBlankGrid(x int, y int) Grid {
-	gr := make([][]int, x, y)
-	return gr
-}
-
-func play() {
-	fmt.Println("Start gaming")
-}
