@@ -1,8 +1,8 @@
 package ui
 
 import (
-	board "github.com/MiguelCiulog/PicGo/internal/ui"
 	"github.com/charmbracelet/bubbles/stopwatch"
+	board "github.com/MiguelCiulog/PicGo/internal/game/board"
 	tea "github.com/charmbracelet/bubbletea"
 	// "github.com/charmbracelet/lipgloss"
 )
@@ -11,10 +11,12 @@ type model struct {
 	board     board.Model
 	stopwatch stopwatch.Model
 
+    selectedCell [][]int
+
 	gameEnded bool
 
 	err        error
-	mouseEvent tea.MouseEvent
+	// mouseEvent tea.MouseEvent
 }
 
 func (m model) Init() tea.Cmd {
@@ -28,8 +30,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 
-	case tea.MouseMsg:
-		m.mouseEvent = tea.MouseEvent(msg)
+	// case tea.MouseMsg:
+	// 	m.mouseEvent = tea.MouseEvent(msg)
 	}
 
 	return m, nil
@@ -52,7 +54,7 @@ func NewModel() model {
 		stopwatch:  stopwatch.Model{},
 		gameEnded:  false,
 		err:        nil,
-		mouseEvent: tea.MouseEvent{},
+		// mouseEvent: tea.MouseEvent{},
 	}
 }
 

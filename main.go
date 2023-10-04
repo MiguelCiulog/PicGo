@@ -7,7 +7,7 @@ import (
 	"log"
 
 	tea "github.com/charmbracelet/bubbletea"
-    game "github.com/MiguelCiulog/PicGo/internal"
+    game "github.com/MiguelCiulog/PicGo/internal/game"
 )
 
 func main() {

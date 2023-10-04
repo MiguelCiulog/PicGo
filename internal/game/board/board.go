@@ -3,17 +3,16 @@ package board
 import (
 	"fmt"
 	"math/rand"
-
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	// tea "github.com/charmbracelet/bubbletea"
+	// "github.com/charmbracelet/lipgloss"
 )
 
 type cellStatus int
 
 const (
 	blank cellStatus = iota
-	incorrect
-	correct
+	filled
+	crossed
 )
 
 type cell struct {
@@ -26,6 +25,21 @@ type Model struct {
 	board       [][]cell
 	columnClues [][]int
 	rowClues    [][]int
+}
+
+func (model *Model) IsBoardSolved() bool {
+	board := model.board
+    hasWon := false
+	
+	for _, v := range board {
+		for _, cell := range v {
+			// If the cell that should be filled and is filled
+			if cell.status == filled && cell.shouldBeFilled == true {
+			}
+
+		}
+	}
+	return hasWon
 }
 
 func NewModel(maxWidth int, maxHeight int) (model Model) {
@@ -108,30 +122,30 @@ func (model *Model) getNonogramHints() (rowHints, colHints [][]int) {
 	return rowHints, colHints
 }
 
-func (m Model) Init() tea.Cmd {
-	return nil
-}
+// func (m Model) Init() tea.Cmd {
+// 	return nil
+// }
 
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		if s := msg.String(); s == "ctrl+c" || s == "q" || s == "esc" {
-			return m, tea.Quit
-		}
+// func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+// 	switch msg := msg.(type) {
+// 	case tea.KeyMsg:
+// 		if s := msg.String(); s == "ctrl+c" || s == "q" || s == "esc" {
+// 			return m, tea.Quit
+// 		}
 
-	case tea.MouseMsg:
-		//
-	}
+// 	case tea.MouseMsg:
+// 		//
+// 	}
 
-	return m, nil
-}
+// 	return m, nil
+// }
 
-func (m Model) View() string {
-	style := lipgloss.NewStyle().
-		BorderStyle(lipgloss.NormalBorder()).
-		Background(lipgloss.Color("#121212"))
+// func (m Model) View() string {
+// 	style := lipgloss.NewStyle().
+// 		BorderStyle(lipgloss.NormalBorder()).
+// 		Background(lipgloss.Color("#121212"))
 
-	stuff := "uwu, owo"
-	mainView := style.Render(stuff)
-	return mainView
-}
+// 	stuff := "uwu, owo"
+// 	mainView := style.Render(stuff)
+// 	return mainView
+// }
