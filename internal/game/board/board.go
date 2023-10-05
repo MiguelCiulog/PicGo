@@ -3,8 +3,6 @@ package board
 import (
 	"fmt"
 	"math/rand"
-	// tea "github.com/charmbracelet/bubbletea"
-	// "github.com/charmbracelet/lipgloss"
 )
 
 type cellStatus int
@@ -29,17 +27,26 @@ type Model struct {
 
 func (model *Model) IsBoardSolved() bool {
 	board := model.board
-    hasWon := false
-	
-	for _, v := range board {
-		for _, cell := range v {
-			// If the cell that should be filled and is filled
-			if cell.status == filled && cell.shouldBeFilled == true {
-			}
 
+	for _, row := range board {
+		for _, cell := range row {
+			switch cell.status {
+			case filled:
+				if cell.shouldBeFilled == false {
+					return false
+				}
+			case blank:
+				if cell.shouldBeFilled == true {
+					return false
+				}
+			case crossed:
+				if cell.shouldBeFilled == true {
+					return false
+				}
+			}
 		}
 	}
-	return hasWon
+	return true
 }
 
 func NewModel(maxWidth int, maxHeight int) (model Model) {
