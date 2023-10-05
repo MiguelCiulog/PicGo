@@ -128,31 +128,3 @@ func (model *Model) getNonogramHints() (rowHints, colHints [][]int) {
 
 	return rowHints, colHints
 }
-
-// func (m Model) Init() tea.Cmd {
-// 	return nil
-// }
-
-// func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-// 	switch msg := msg.(type) {
-// 	case tea.KeyMsg:
-// 		if s := msg.String(); s == "ctrl+c" || s == "q" || s == "esc" {
-// 			return m, tea.Quit
-// 		}
-
-// 	case tea.MouseMsg:
-// 		//
-// 	}
-
-// 	return m, nil
-// }
-
-// func (m Model) View() string {
-// 	style := lipgloss.NewStyle().
-// 		BorderStyle(lipgloss.NormalBorder()).
-// 		Background(lipgloss.Color("#121212"))
-
-// 	stuff := "uwu, owo"
-// 	mainView := style.Render(stuff)
-// 	return mainView
-// }
