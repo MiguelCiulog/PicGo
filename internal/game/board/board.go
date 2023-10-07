@@ -1,7 +1,7 @@
 package board
 
 import (
-	"fmt"
+	// "fmt"
 	"math/rand"
 )
 
@@ -13,74 +13,83 @@ const (
 	crossed
 )
 
-type cell struct {
-	status         cellStatus
-	shouldBeFilled bool
-	modifiable     bool
+type clue struct {
+	hint   []int
+	status []bool
 }
 
 type Model struct {
-	board       [][]cell
-	columnClues [][]int
-	rowClues    [][]int
+	board       [][]cellStatus
+	columnClues []clue
+	rowClues    []clue
+
+	maxRowCells, maxColumnCells int
 }
 
-func (model *Model) IsBoardSolved() bool {
-	board := model.board
-
-	for _, row := range board {
-		for _, cell := range row {
-			switch cell.status {
-			case filled:
-				if cell.shouldBeFilled == false {
-					return false
-				}
-			case blank:
-				if cell.shouldBeFilled == true {
-					return false
-				}
-			case crossed:
-				if cell.shouldBeFilled == true {
-					return false
-				}
+func (model *Model) isSegmentSolved(segment []clue) bool {
+	for _, cell := range segment {
+		for _, isFullfilled := range cell.status {
+			if !isFullfilled {
+				return false
 			}
 		}
 	}
 	return true
 }
 
-func NewModel(maxWidth int, maxHeight int) (model Model) {
-	board := model.createRandomBoard(maxWidth, maxHeight)
-	model.board = board
+func (model *Model) IsBoardSolved() bool {
+	areColumnsSolved := model.isSegmentSolved(model.columnClues)
+	if !areColumnsSolved {
+		return false
+	}
 
-	rowHints, colHints := model.getNonogramHints()
-	model.rowClues = rowHints
-	model.columnClues = colHints
+	areRowsSolved := model.isSegmentSolved(model.rowClues)
+	if !areRowsSolved {
+		return false
+	}
 
-	fmt.Println(model)
+	return true
+}
+
+func NewModel(maxRowCells, maxColumnCells int) (model Model) {
+	model.maxRowCells = maxRowCells
+	model.maxColumnCells = maxColumnCells
+
+	model.board = model.createBlankBoard()
+	model.rowClues, model.columnClues = model.getNonogramHints()
+
+	// fmt.Println(model)
 	return model
 }
 
-func (model *Model) createRandomBoard(maxWidth int, maxHeight int) [][]cell {
-	var board [][]cell
+// Create a 2D array of booleans with default blank cell status
+func (model *Model) createBlankBoard() [][]cellStatus {
+	var board [][]cellStatus
+	for i := 0; i < model.maxRowCells; i++ {
+		row := make([]cellStatus, model.maxColumnCells)
+		board = append(board, row)
+	}
+	return board
+}
 
-	for i := 0; i < maxWidth; i++ { // Columns
-		cellHolder := make([]cell, 0)
-		for j := 0; j < maxHeight; j++ { // Rows
-			cell := cell{
-				status:     blank,
-				modifiable: true,
-			}
+// Create a random board with filled stuff
+func (model *Model) createRandomBoard() [][]cellStatus {
+	var board [][]cellStatus
+
+	// TODO: Create an algorithm for symmetry
+	for i := 0; i < model.maxColumnCells; i++ { // Columns
+		cellHolder := make([]cellStatus, 0)
+		for j := 0; j < model.maxRowCells; j++ { // Rows
+			cell := blank
 			if shouldBeFilled() {
-				cell.shouldBeFilled = true
-			} else {
-				cell.shouldBeFilled = false
+				cell = filled
 			}
 
 			cellHolder = append(cellHolder, cell)
 		}
 		board = append(board, cellHolder)
 	}
+
 	return board
 }
 
@@ -88,22 +97,27 @@ func shouldBeFilled() bool {
 	return rand.Intn(2) == 1
 }
 
-func (model *Model) generateSegmentHints(mainSegmentSize, secondarySegmentSize int) [][]int {
-	board := model.board
-	hints := make([][]int, mainSegmentSize)
+func generateSegmentHints(
+	randomBoard [][]cellStatus,
+	mainSegmentSize int,
+	secondarySegmentSize int,
+) []clue {
+	clue := make([]clue, mainSegmentSize)
 
 	// Process segment (rows then columns or viceversa)
 	for i := 0; i < mainSegmentSize; i++ {
-		row := board[i]
+		row := randomBoard[i]
 		hint := []int{}
+		status := []bool{}
 		count := 0
 
 		for j := 0; j < secondarySegmentSize; j++ {
-			if row[j].shouldBeFilled {
+			if row[j] == filled {
 				count++
 			} else {
 				if count > 0 {
 					hint = append(hint, count)
+					status = append(status, false)
 					count = 0
 				}
 			}
@@ -111,20 +125,22 @@ func (model *Model) generateSegmentHints(mainSegmentSize, secondarySegmentSize i
 
 		if count > 0 {
 			hint = append(hint, count)
+			status = append(status, false)
 		}
 
-		hints[i] = hint
+		clue[i].hint = hint
+		clue[i].status = status
 	}
-	return hints
+	return clue
 }
 
-func (model *Model) getNonogramHints() (rowHints, colHints [][]int) {
-	board := model.board
-	numRows := len(board)
-	numCols := len(board[0])
+func (model *Model) getNonogramHints() (rowClues, colClues []clue) {
+	randomBoard := model.createRandomBoard()
+	numRows := len(randomBoard)
+	numCols := len(randomBoard[0])
 
-	rowHints = model.generateSegmentHints(numRows, numCols)
-	colHints = model.generateSegmentHints(numCols, numRows)
+	rowClues = generateSegmentHints(randomBoard, numRows, numCols)
+	colClues = generateSegmentHints(randomBoard, numCols, numRows)
 
-	return rowHints, colHints
+	return rowClues, colClues
 }
