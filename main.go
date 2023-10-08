@@ -6,14 +6,15 @@ package main
 import (
 	"log"
 
+	game "github.com/MiguelCiulog/PicGo/internal/game"
 	tea "github.com/charmbracelet/bubbletea"
-    game "github.com/MiguelCiulog/PicGo/internal/game"
+	zone "github.com/lrstanley/bubblezone"
 )
 
 func main() {
-	p := tea.NewProgram(game.NewModel(), tea.WithAltScreen(), tea.WithMouseCellMotion())
+	zone.NewGlobal()
+	p := tea.NewProgram(game.NewModel(), tea.WithMouseCellMotion())
 	if _, err := p.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
-
