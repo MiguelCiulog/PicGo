@@ -28,8 +28,8 @@ type Model struct {
 
 func (model *Model) isSegmentSolved(segment []clue) bool {
 	for _, cell := range segment {
-		for _, isFullfilled := range cell.status {
-			if !isFullfilled {
+		for _, clueIsDone := range cell.status {
+			if !clueIsDone {
 				return false
 			}
 		}
