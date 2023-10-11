@@ -19,9 +19,9 @@ type clue struct {
 }
 
 type Model struct {
-	board       [][]cellStatus
-	columnClues []clue
-	rowClues    []clue
+	Board       [][]cellStatus
+	ColumnClues []clue
+	RowClues    []clue
 
 	maxRowCells, maxColumnCells int
 }
@@ -38,12 +38,12 @@ func (model *Model) isSegmentSolved(segment []clue) bool {
 }
 
 func (model *Model) IsBoardSolved() bool {
-	areColumnsSolved := model.isSegmentSolved(model.columnClues)
+	areColumnsSolved := model.isSegmentSolved(model.ColumnClues)
 	if !areColumnsSolved {
 		return false
 	}
 
-	areRowsSolved := model.isSegmentSolved(model.rowClues)
+	areRowsSolved := model.isSegmentSolved(model.RowClues)
 	if !areRowsSolved {
 		return false
 	}
@@ -55,8 +55,8 @@ func NewModel(maxRowCells, maxColumnCells int) (model Model) {
 	model.maxRowCells = maxRowCells
 	model.maxColumnCells = maxColumnCells
 
-	model.board = model.createBlankBoard()
-	model.rowClues, model.columnClues = model.getNonogramHints()
+	model.Board = model.createBlankBoard()
+	model.RowClues, model.ColumnClues = model.getNonogramHints()
 
 	// fmt.Println(model)
 	return model
