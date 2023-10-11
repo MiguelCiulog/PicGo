@@ -48,20 +48,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	// fmt.Println("%#v\n", m.board)
-	// return zone.Scan(styles.BlankCell.Render("x","x"))
-	// var out strings.Builder
-
+	// for _, row := range m.board.Board {
+	// 	for _, cell := range row {
+	// 	}
+	// }
 	uwu := styles.BlankCell.Render(" ")
 	owo := styles.SelectedCell.Render(" ")
-	// x := lipgloss.JoinVertical()
 	x := lipgloss.JoinHorizontal(lipgloss.Center, uwu, owo, uwu)
-	// out.WriteString(uwu)
-	// out.WriteString(owo)
-	// out.WriteString(uwu)
 
 	return zone.Scan(lipgloss.PlaceHorizontal(m.width, lipgloss.Center, x))
-	// return zone.Scan(lipgloss.JoinHorizontal(lipgloss.Center, uwu,owo,uwu))
 }
 
 func NewModel() model {
