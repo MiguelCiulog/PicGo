@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"strconv"
+
 	board "github.com/MiguelCiulog/PicGo/internal/game/board"
 	"github.com/MiguelCiulog/PicGo/internal/game/styles"
 	"github.com/charmbracelet/bubbles/stopwatch"
@@ -48,15 +50,35 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	// for _, row := range m.board.Board {
-	// 	for _, cell := range row {
-	// 	}
-	// }
-	uwu := styles.BlankCell.Render(" ")
-	owo := styles.SelectedCell.Render(" ")
-	x := lipgloss.JoinHorizontal(lipgloss.Center, uwu, owo, uwu)
+	boardStr := make([]string, m.board.MaxRowCells)
+	for x_idx, row := range m.board.Board {
+		rowStr := make([]string, m.board.MaxColumnCells)
 
-	return zone.Scan(lipgloss.PlaceHorizontal(m.width, lipgloss.Center, x))
+		for y_idx, cell := range row {
+			var style lipgloss.Style
+			switch cell {
+			case board.Blank:
+				if (x_idx+y_idx)%2 == 0 {
+					style = styles.BlankCellVar1
+				} else {
+					style = styles.BlankCellVar2
+
+				}
+			case board.Filled:
+				style = styles.FilledCell
+			case board.Crossed:
+				style = styles.CrossedCell
+			}
+			coordinates := strconv.Itoa(x_idx) + strconv.Itoa(y_idx)
+			tmpStr := zone.Mark(coordinates, style.Render(" "))
+			rowStr = append(rowStr, tmpStr)
+		}
+
+		boardStr = append(boardStr, lipgloss.JoinHorizontal(lipgloss.Center, rowStr...))
+	}
+
+	finalstr := lipgloss.JoinVertical(lipgloss.Center, boardStr...)
+	return zone.Scan(lipgloss.PlaceHorizontal(m.width, lipgloss.Center, finalstr))
 }
 
 func NewModel() model {
@@ -68,14 +90,3 @@ func NewModel() model {
 		mouseEvent: tea.MouseEvent{},
 	}
 }
-
-//     mdl := model{
-//     	board:      board.Model{},
-//     	stopwatch:  stopwatch.Model{},
-//     	gameEnded:  false,
-//     	err:        nil,
-//     	mouseEvent: tea.MouseEvent{},
-//     }
-// 	game := GenerateGrid(5, 5)
-// 	return game
-// }

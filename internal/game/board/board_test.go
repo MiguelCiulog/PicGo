@@ -33,8 +33,8 @@ func TestIfBoardIsSolved(t *testing.T) {
 			{hint: []int{}, status: []bool{}},
 			{hint: []int{3}, status: []bool{false}},
 		},
-		maxRowCells:    5,
-		maxColumnCells: 5,
+		MaxRowCells:    5,
+		MaxColumnCells: 5,
 	}
 	if unsolvedBoard.IsBoardSolved() {
 		t.Log(unsolvedBoard.board)
